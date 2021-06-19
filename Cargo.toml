@@ -1,0 +1,15 @@
+[package]
+name = "payment-engine"
+version = "0.1.0"
+authors = ["alejandroherreraguerrero <nemesis_alejandro@hotmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+async-std = { version = "1.8", features = ["attributes"] }
+csv = "1.1"
+float-cmp = "0.8"
+log = "0.4"
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "1.0"
