@@ -20,11 +20,6 @@ pub async fn read_from_file(
         let record: Operation = result?;
 
         let client = record.client;
-        let tx = Transaction {
-            tx: record.tx,
-            amount: record.amount,
-            disputed: false,
-        };
 
         if !accounting_storage.exists_account(client) {
             accounting_storage.create_account(client).await?;
@@ -35,26 +30,48 @@ pub async fn read_from_file(
         match tx_type {
             TransactionType::Chargeback => {
                 debug!("Attempting to chargeback in client {:?}", client);
-                accounting_storage.chargeback(client, tx).await?;
+                let option = transaction_storage.get_transaction(record.tx);
+                if let Some(tx) = option {
+                    if tx.disputed {
+                        accounting_storage.chargeback(client, tx.amount).await?;
+                    }
+                }
             }
             TransactionType::Deposit => {
                 debug!("Attempting to deposit in client {:?}", client);
                 accounting_storage.deposit(client, record.amount).await?;
+                let tx = Transaction {
+                    tx: record.tx,
+                    amount: record.amount,
+                    disputed: false,
+                };
                 transaction_storage.add_transaction(tx);
             }
             TransactionType::Dispute => {
                 debug!("Attempting to dispute for client {:?}", client);
-                // get tx from ID
-                accounting_storage.dispute(client, tx).await?;
-                // tx.disputed = true;
+                let option = transaction_storage.get_transaction(record.tx);
+                if let Some(tx) = option {
+                    accounting_storage.dispute(client, tx.amount).await?;
+                    tx.disputed = true;
+                }
             }
             TransactionType::Resolve => {
                 debug!("Attempting to resolve from client {:?}", client);
-                accounting_storage.resolve(client, tx.tx).await?;
+                let option = transaction_storage.get_transaction(record.tx);
+                if let Some(tx) = option {
+                    if tx.disputed {
+                        accounting_storage.resolve(client, tx.amount).await?;
+                    }
+                }
             }
             TransactionType::Withdrawal => {
                 debug!("Attempting to withdraw from client {:?}", client);
                 accounting_storage.withdraw(client, record.amount).await?;
+                let tx = Transaction {
+                    tx: record.tx,
+                    amount: record.amount,
+                    disputed: false,
+                };
                 transaction_storage.add_transaction(tx);
             }
         }

@@ -54,17 +54,15 @@ impl AccountingStorage {
         self.accounts.iter().any(|account| account.client == client)
     }
 
-    pub async fn chargeback(&mut self, client: u16, tx: Transaction) -> AccountingResponse<()> {
-        if tx.disputed {
-            let acc = self.get_account(client).await;
-            match acc {
-                Some(mut account) => {
-                    account.available -= tx.amount;
-                    account.held -= tx.amount;
-                    account.locked = true;
-                }
-                None => return Err(AccountingError::AccountNotFound),
+    pub async fn chargeback(&mut self, client: u16, amount: f64) -> AccountingResponse<()> {
+        let acc = self.get_account(client).await;
+        match acc {
+            Some(mut account) => {
+                account.held -= amount;
+                account.total -= amount;
+                account.locked = true;
             }
+            None => return Err(AccountingError::AccountNotFound),
         }
 
         Ok(())
@@ -89,8 +87,7 @@ impl AccountingStorage {
         }
     }
 
-    pub async fn dispute(&mut self, client: u16, tx: Transaction) -> AccountingResponse<()> {
-        let amount = tx.amount;
+    pub async fn dispute(&mut self, client: u16, amount: f64) -> AccountingResponse<()> {
         let acc = self.get_account(client).await;
         match acc {
             Some(mut account) => {
@@ -104,8 +101,18 @@ impl AccountingStorage {
         }
     }
 
-    pub async fn resolve(&mut self, client: u16, tx: u32) -> AccountingResponse<()> {
-        Ok(())
+    pub async fn resolve(&mut self, client: u16, amount: f64) -> AccountingResponse<()> {
+        let acc = self.get_account(client).await;
+        match acc {
+            Some(mut account) => {
+                if !account.locked {
+                    account.held -= amount;
+                    account.available += amount;
+                }
+                Ok(())
+            }
+            None => Err(AccountingError::AccountNotFound),
+        }
     }
 
     pub async fn withdraw(&mut self, client: u16, amount: f64) -> AccountingResponse<()> {
