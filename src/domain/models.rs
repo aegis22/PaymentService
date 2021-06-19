@@ -31,7 +31,7 @@ pub struct Operation {
     pub r#type: String,
     pub client: u16,
     pub tx: u32,
-    pub amount: f64,
+    pub amount: Option<f64>,
 }
 
 #[derive(Debug)]

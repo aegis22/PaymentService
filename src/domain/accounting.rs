@@ -1,5 +1,4 @@
 use float_cmp::approx_eq;
-use std::sync::Mutex;
 use thiserror::Error;
 
 use super::models::{Account, Transaction};
@@ -69,11 +68,6 @@ impl AccountingStorage {
     }
 
     pub async fn deposit(&mut self, client: u16, amount: f64) -> AccountingResponse<()> {
-        // Add mutex
-        /*  let acc = Mutex::new(self.get_account(client).await);
-            let mut guard = acc.lock().unwrap();
-            match &mut *guard {
-        */
         let acc = self.get_account(client).await;
         match acc {
             Some(mut account) => {

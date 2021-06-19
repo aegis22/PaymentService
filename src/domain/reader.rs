@@ -20,6 +20,7 @@ pub async fn read_from_file(
         let record: Operation = result?;
 
         let client = record.client;
+        let op_amount = record.amount;
 
         if !accounting_storage.exists_account(client) {
             accounting_storage.create_account(client).await?;
@@ -39,13 +40,15 @@ pub async fn read_from_file(
             }
             TransactionType::Deposit => {
                 debug!("Attempting to deposit in client {:?}", client);
-                accounting_storage.deposit(client, record.amount).await?;
-                let tx = Transaction {
-                    tx: record.tx,
-                    amount: record.amount,
-                    disputed: false,
-                };
-                transaction_storage.add_transaction(tx);
+                if let Some(amount) = op_amount {
+                    accounting_storage.deposit(client, amount).await?;
+                    let tx = Transaction {
+                        tx: record.tx,
+                        amount: amount,
+                        disputed: false,
+                    };
+                    transaction_storage.add_transaction(tx);
+                }
             }
             TransactionType::Dispute => {
                 debug!("Attempting to dispute for client {:?}", client);
@@ -66,13 +69,15 @@ pub async fn read_from_file(
             }
             TransactionType::Withdrawal => {
                 debug!("Attempting to withdraw from client {:?}", client);
-                accounting_storage.withdraw(client, record.amount).await?;
-                let tx = Transaction {
-                    tx: record.tx,
-                    amount: record.amount,
-                    disputed: false,
-                };
-                transaction_storage.add_transaction(tx);
+                if let Some(amount) = op_amount {
+                    accounting_storage.withdraw(client, amount).await?;
+                    let tx = Transaction {
+                        tx: record.tx,
+                        amount: amount,
+                        disputed: false,
+                    };
+                    transaction_storage.add_transaction(tx);
+                }
             }
         }
     }

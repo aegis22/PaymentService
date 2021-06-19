@@ -1,13 +1,4 @@
 use super::models::Transaction;
-use thiserror::Error;
-
-#[derive(Error, Debug)]
-pub enum TransactionError {
-    #[error("transaction not found")]
-    TransactionNotFound,
-}
-
-pub type TransactionResponse<T> = Result<T, TransactionError>;
 
 #[derive(Debug)]
 pub struct TransactionStorage {
@@ -19,12 +10,6 @@ impl TransactionStorage {
         TransactionStorage {
             transactions: Vec::new(),
         }
-    }
-
-    pub fn exists_transaction(&self, tx: u32) -> bool {
-        self.transactions
-            .iter()
-            .any(|transaction| transaction.tx == tx)
     }
 
     pub fn add_transaction(&mut self, tx: Transaction) {
