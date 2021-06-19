@@ -110,7 +110,6 @@ impl AccountingStorage {
     }
 
     pub async fn withdraw(&mut self, client: u16, amount: f64) -> AccountingResponse<()> {
-        // Add mutex
         let acc = self.get_account(client).await;
         match acc {
             Some(mut account) => {
