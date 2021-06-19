@@ -7,10 +7,13 @@ deposit,3,5,1.0
 deposit,3,6,1.0
 deposit,3,7,1.0
 deposit,3,8,1.0
-withdrawal,1,4,1.5
-withdrawal,2,5,2.0
+withdrawal,3,9,1.0
+withdrawal,1,10,1.5
+withdrawal,2,11,2.0
 resolve,2,2,
 dispute,3,4,
 dispute,3,5,
+dispute,3,9,
 resolve,3,4,
+resolve,3,9,
 chargeback,3,5,

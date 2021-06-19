@@ -44,7 +44,7 @@ pub async fn read_from_file(
                     accounting_storage.deposit(client, amount).await?;
                     let tx = Transaction {
                         tx: record.tx,
-                        amount: amount,
+                        amount,
                         disputed: false,
                     };
                     transaction_storage.add_transaction(tx);
@@ -73,7 +73,7 @@ pub async fn read_from_file(
                     accounting_storage.withdraw(client, amount).await?;
                     let tx = Transaction {
                         tx: record.tx,
-                        amount: amount,
+                        amount: -amount,
                         disputed: false,
                     };
                     transaction_storage.add_transaction(tx);
