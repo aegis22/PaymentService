@@ -1,7 +1,7 @@
 use float_cmp::approx_eq;
 use thiserror::Error;
 
-use super::models::{Account, Transaction};
+use super::models::Account;
 
 #[derive(Error, Debug)]
 pub enum AccountingError {
@@ -18,14 +18,12 @@ pub type AccountingResponse<T> = Result<T, AccountingError>;
 #[derive(Debug)]
 pub struct AccountingStorage {
     pub accounts: Vec<Account>,
-    pub transactions: Vec<Transaction>,
 }
 
 impl AccountingStorage {
     pub fn new() -> AccountingStorage {
         AccountingStorage {
             accounts: Vec::new(),
-            transactions: Vec::new(),
         }
     }
 
