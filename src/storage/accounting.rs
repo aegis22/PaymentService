@@ -1,7 +1,7 @@
 use float_cmp::approx_eq;
 use thiserror::Error;
 
-use super::models::Account;
+use crate::domain::models::Account;
 
 #[derive(Error, Debug)]
 pub enum AccountingError {

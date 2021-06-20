@@ -2,12 +2,8 @@ use csv::Reader;
 use log::debug;
 use std::error::Error;
 
-use super::models::Operation;
-use super::models::Transaction;
-use super::models::TransactionType;
-
-use super::AccountingStorage;
-use super::TransactionStorage;
+use crate::domain::models::{Operation, Transaction, TransactionType};
+use crate::storage::{AccountingStorage, TransactionStorage};
 
 pub async fn read_from_file(
     filename: &str,

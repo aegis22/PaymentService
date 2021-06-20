@@ -1,4 +1,4 @@
-use super::models::Transaction;
+use crate::domain::models::Transaction;
 
 #[derive(Debug)]
 pub struct TransactionStorage {

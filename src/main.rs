@@ -1,8 +1,11 @@
 mod domain;
+mod service;
+mod storage;
 
 use std::env;
 
-use domain::{read_from_file, AccountingStorage, TransactionStorage};
+use service::read_from_file;
+use storage::{AccountingStorage, TransactionStorage};
 
 #[async_std::main]
 async fn main() {
